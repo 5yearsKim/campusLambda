@@ -21,7 +21,11 @@ def find_department():
     try:
         campus = data['campus']
         graduate = data['graduate']
-        dep_list = list(campus_dict[campus][graduate].keys())
+        target = campus_dict[campus][graduate]
+        if isinstance(target, set):
+            dep_list = list(target)
+        else:
+            dep_list = list(target.keys())
         rsp = {"is_success": True, "message": "get department list success", "data": dep_list }
         return rsp
     except Exception as e:
