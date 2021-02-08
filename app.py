@@ -1,6 +1,5 @@
 from chalice import Chalice
-from chalicelib.campus_info import campus_dict
-
+from chalicelib.info_handler import *
 app = Chalice(app_name='campusLambda')
 app.api.cors =True
 
@@ -10,43 +9,16 @@ def index():
 
 @app.route('/find/campus', methods=["GET"])
 def find_campus():
-    campus_list = list(campus_dict.keys())
-    rsp = {"is_success": True, "message": "get campus list success", "data": campus_list }
-    return rsp
+    return find_campus_handler()
 
 @app.route('/find/department', methods=["GET"])
-def find_department():
-    request = app.current_request
-    data = request.query_params
-    try:
-        campus = data['campus']
-        graduate = data['graduate']
-        target = campus_dict[campus][graduate]
-        if isinstance(target, set):
-            dep_list = list(target)
-        else:
-            dep_list = list(target.keys())
-        rsp = {"is_success": True, "message": "get department list success", "data": dep_list }
-        return rsp
-    except Exception as e:
-        rsp = {"is_success": False, "message": str(e), "error_cd": 10 }
-        return rsp
-        
+def find_department(): 
+    return find_department_handler(app.current_request) 
 
 @app.route('/find/division', methods=["GET"])
 def find_division():
-    request = app.current_request
-    data = request.query_params
-    try:
-        campus = data['campus']
-        graduate = data['graduate']
-        if graduate != '학부':
-            raise Exception('only support for undergraduate')
-        department = data['department']
-        div_list = list(campus_dict[campus][graduate][department])
-        rsp = {"is_success": True, "message": "get division list success", "data": div_list }
-        return rsp
-    except Exception as e:
-        rsp = {"is_success": False, "message": str(e), "error_cd": 11 }
-        return rsp
+    return find_division_handler(app.current_request)
 
+@app.route('/campusDomain', methods=['GET'])
+def get_campusDomain():
+    return get_campusDomain_handler(app.current_request) 
